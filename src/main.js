@@ -410,24 +410,24 @@ const createLoadMoreButtonTemplate = () => {
   );
 };
 
-const render = (container, template, place = 'beforeend') => {
+const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
 };
 
-const mainContainer = document.querySelector('.main');
-const mainControlSection = mainContainer.querySelector('.main__control');
+const mainContainer = document.querySelector(`.main`);
+const mainControlSection = mainContainer.querySelector(`.main__control`);
 
 render(mainControlSection, createSiteMenuTemplate());
 render(mainContainer, createFilterTemplate());
 render(mainContainer, createTaskBoardTemplate());
 
-const boardContainerSection = mainContainer.querySelector('.board');
+const boardContainerSection = mainContainer.querySelector(`.board`);
 
 render(boardContainerSection, createLoadMoreButtonTemplate());
 
-const boardTaskListSection = boardContainerSection.querySelector('.board__tasks');
+const boardTaskListSection = boardContainerSection.querySelector(`.board__tasks`);
 
-render(boardTaskListSection, createTaskFormTemplate(), 'afterbegin');
+render(boardTaskListSection, createTaskFormTemplate(), `afterbegin`);
 
 for (let i = 0; i < TASK_COUNT; i++) {
   render(boardTaskListSection, createTaskTemplate());
