@@ -1,6 +1,6 @@
 'use strict';
 
-const taskCount = 3;
+const TASK_COUNT = 3;
 
 const createSiteMenuTemplate = () => {
   return (
@@ -431,6 +431,6 @@ const boardTaskListSection = boardContainerSection.querySelector('.board__tasks'
 
 render(boardTaskListSection, createTaskFormTemplate(), 'afterbegin');
 
-for (let i = 0; i < taskCount; i++) {
-  render(boardTaskSection, createTaskTemplate());
+for (let i = 0; i < TASK_COUNT; i++) {
+  render(boardTaskListSection, createTaskTemplate());
 }
