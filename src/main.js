@@ -4,8 +4,10 @@ import {createTaskBoardTemplate} from './components/task-board.js';
 import {createTaskTemplate} from './components/task.js';
 import {createTaskFormTemplate} from './components/task-form.js';
 import {createLoadMoreButtonTemplate} from './components/load-more.js';
+import {generateFilters} from "./mock/filters";
+import {generateTask} from "./mock/tasks";
 
-const TASK_COUNT = 3;
+const TASK_COUNT = 4;
 
 const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
@@ -15,17 +17,23 @@ const mainContainer = document.querySelector(`.main`);
 const mainControlSection = mainContainer.querySelector(`.main__control`);
 
 render(mainControlSection, createSiteMenuTemplate());
-render(mainContainer, createFilterTemplate());
-render(mainContainer, createTaskBoardTemplate());
 
-const boardContainerSection = mainContainer.querySelector(`.board`);
-
-render(boardContainerSection, createLoadMoreButtonTemplate());
-
-const boardTaskListSection = boardContainerSection.querySelector(`.board__tasks`);
-
-render(boardTaskListSection, createTaskFormTemplate(), `afterbegin`);
+const taskList = [];
 
 for (let i = 0; i < TASK_COUNT; i++) {
-  render(boardTaskListSection, createTaskTemplate());
+  taskList.push(generateTask());
 }
+
+render(mainContainer, createTaskBoardTemplate());
+
+const boardTaskListSection = mainContainer.querySelector(`.board__tasks`);
+render(boardTaskListSection, createTaskFormTemplate(taskList.shift()), `afterbegin`);
+
+const filters = generateFilters(taskList);
+render(mainControlSection, createFilterTemplate(filters), `afterend`);
+
+taskList.forEach((task) => {
+  render(boardTaskListSection, createTaskTemplate(task));
+});
+
+render(boardTaskListSection, createLoadMoreButtonTemplate(), `afterend`);

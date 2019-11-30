@@ -1,5 +1,5 @@
-export const createTaskFormTemplate = () =>
-  `<article class="card card--edit card--black">
+export const createTaskFormTemplate = (task) =>
+  `<article class="card card--edit card--${task.color}">
     <form class="card__form" method="get">
       <div class="card__inner">
         <div class="card__color-bar">
