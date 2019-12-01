@@ -1,5 +1,3 @@
-import {getRandomNumber} from "./utils";
-
 const generateFilters = (tasks) => {
   const filters = [
     {

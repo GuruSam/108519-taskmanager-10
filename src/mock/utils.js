@@ -6,8 +6,7 @@ const getRandomNumber = (min, max) => Math.floor(Math.random() * ((max + 1) - mi
 
 const getRandomArrayItem = (array) => array[getRandomNumber(0, array.length - 1)];
 
-// Параметр chance - процент вероятности получить true
-const getRandomBoolean = (chance = 50) => Math.random() * 100 < chance;
+const getRandomBoolean = () => Math.random() > 0.5;
 
 const castTimeFormat = (value) => value < 10 ? `0${value}` : value;
 
