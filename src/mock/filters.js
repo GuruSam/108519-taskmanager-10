@@ -1,31 +1,31 @@
 const generateFilters = (tasks) => {
   const filters = [
     {
-      title: `All`,
+      title: `all`,
       count: 0
     },
     {
-      title: `Today`,
-      count: tasks.filter((task) => task.dueDate && task.dueDate.getDate() === new Date().getDate()).length
-    },
-    {
-      title: `Overdue`,
+      title: `overdue`,
       count: tasks.filter((task) => task.dueDate && task.dueDate < Date.now()).length
     },
     {
-      title: `Favorites`,
+      title: `today`,
+      count: tasks.filter((task) => task.dueDate && task.dueDate.getDate() === new Date().getDate()).length
+    },
+    {
+      title: `favorites`,
       count: tasks.filter((task) => task.isFavorite).length
     },
     {
-      title: `Repeating`,
+      title: `repeating`,
       count: tasks.filter((task) => Object.values(task.repeatingDays).some(Boolean)).length
     },
     {
-      title: `Tags`,
+      title: `tags`,
       count: tasks.filter((task) => task.tags.length >= 1).length
     },
     {
-      title: `Archive`,
+      title: `archive`,
       count: tasks.filter((task) => task.isArchive).length
     },
   ];
