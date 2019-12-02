@@ -4,8 +4,12 @@ import {createTaskBoardTemplate} from './components/task-board.js';
 import {createTaskTemplate} from './components/task.js';
 import {createTaskFormTemplate} from './components/task-form.js';
 import {createLoadMoreButtonTemplate} from './components/load-more.js';
+import {generateFilters} from "./mock/filters";
+import {generateTask} from "./mock/tasks";
 
-const TASK_COUNT = 3;
+const TOTAL_TASK_AMOUNT = 16;
+const INITIAL_TASK_AMOUNT = 8;
+const LOADED_TASK_AMOUNT = 8;
 
 const render = (container, template, place = `beforeend`) => {
   container.insertAdjacentHTML(place, template);
@@ -15,17 +19,44 @@ const mainContainer = document.querySelector(`.main`);
 const mainControlSection = mainContainer.querySelector(`.main__control`);
 
 render(mainControlSection, createSiteMenuTemplate());
-render(mainContainer, createFilterTemplate());
+
+// Генерация задач-моков
+const taskList = [];
+
+for (let i = 0; i < TOTAL_TASK_AMOUNT; i++) {
+  taskList.push(generateTask());
+}
+
 render(mainContainer, createTaskBoardTemplate());
 
-const boardContainerSection = mainContainer.querySelector(`.board`);
+const boardTaskListSection = mainContainer.querySelector(`.board__tasks`);
+render(boardTaskListSection, createTaskFormTemplate(taskList[0]), `afterbegin`);
 
-render(boardContainerSection, createLoadMoreButtonTemplate());
+// Рендер фильтров
+const filters = generateFilters(taskList);
+render(mainControlSection, createFilterTemplate(filters), `afterend`);
 
-const boardTaskListSection = boardContainerSection.querySelector(`.board__tasks`);
-
-render(boardTaskListSection, createTaskFormTemplate(), `afterbegin`);
-
-for (let i = 0; i < TASK_COUNT; i++) {
-  render(boardTaskListSection, createTaskTemplate());
+// Рендер задач
+for (let i = 1; i < INITIAL_TASK_AMOUNT; i++) {
+  render(boardTaskListSection, createTaskTemplate(taskList[i]));
 }
+
+// Рендер кнопки Load-More и установка клик-события
+render(boardTaskListSection, createLoadMoreButtonTemplate(), `afterend`);
+
+const loadMoreBtn = mainContainer.querySelector(`.load-more`);
+
+loadMoreBtn.onclick = () => {
+  let taskLoaded = document.querySelectorAll(`.card`).length;
+  const loadMoreAmount = taskLoaded + LOADED_TASK_AMOUNT;
+
+  taskList.slice(taskLoaded, loadMoreAmount)
+    .forEach((task) => {
+      render(boardTaskListSection, createTaskTemplate(task));
+      taskLoaded++;
+    });
+
+  if (taskLoaded === TOTAL_TASK_AMOUNT) {
+    loadMoreBtn.remove();
+  }
+};
