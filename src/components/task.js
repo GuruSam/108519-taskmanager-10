@@ -1,4 +1,4 @@
-import {formatTime, Months} from "../mock/utils";
+import {createElement, formatTime, Months} from "../utils";
 
 const renderTags = (tags) => {
   return tags.map((tag) =>
@@ -10,7 +10,7 @@ const renderTags = (tags) => {
     .join(`\n`);
 };
 
-export const createTaskTemplate = (task) => {
+const createTaskTemplate = (task) => {
   const isExpired = task.dueDate instanceof Date && task.dueDate < Date.now();
   const isDateShowing = !!task.dueDate;
 
@@ -70,3 +70,22 @@ export const createTaskTemplate = (task) => {
     </div>
   </article>`;
 };
+
+export default class Task {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+}

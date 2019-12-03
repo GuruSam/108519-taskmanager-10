@@ -1,4 +1,4 @@
-import {getRandomArrayItem, getRandomNumber, getRandomBoolean} from "./utils";
+import {getRandomArrayItem, getRandomNumber, getRandomBoolean} from "../utils";
 
 const taskDescriptions = [`Изучить теорию`, `Сделать домашку`, `Пройти интенсив на соточку`];
 const days = [`mo`, `tu`, `we`, `th`, `fr`, `sa`, `su`];
