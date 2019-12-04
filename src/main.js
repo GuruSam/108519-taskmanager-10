@@ -1,48 +1,68 @@
-import {createSiteMenuTemplate} from './components/site-menu.js';
-import {createFilterTemplate} from './components/filter.js';
-import {createTaskBoardTemplate} from './components/task-board.js';
-import {createTaskTemplate} from './components/task.js';
-import {createTaskFormTemplate} from './components/task-form.js';
-import {createLoadMoreButtonTemplate} from './components/load-more.js';
+import MenuComponent from './components/site-menu.js';
+import FilterComponent from './components/filter.js';
+import TaskBoardComponent from './components/task-board.js';
+import TaskComponent from './components/task.js';
+import TaskFormComponent from './components/task-form.js';
+import LoadMoreButtonComponent from './components/load-more.js';
 import {generateFilters} from "./mock/filters";
 import {generateTask} from "./mock/tasks";
+import {render, isEscPressed} from "./utils";
 
 const TOTAL_TASK_AMOUNT = 16;
 const INITIAL_TASK_AMOUNT = 8;
 const LOADED_TASK_AMOUNT = 8;
 
-const render = (container, template, place = `beforeend`) => {
-  container.insertAdjacentHTML(place, template);
+const renderTask = (task) => {
+  const taskComponent = new TaskComponent(task);
+  const taskFormComponent = new TaskFormComponent(task);
+  const taskEditButton = taskComponent.getElement().querySelector(`.card__btn--edit`);
+
+  const onEditClick = () => {
+    boardTaskListSection.replaceChild(taskFormComponent.getElement(), taskComponent.getElement());
+    document.addEventListener(`keydown`, onEscKeyDown);
+  };
+
+  const onEscKeyDown = (evt) => {
+    if (isEscPressed(evt)) {
+      boardTaskListSection.replaceChild(taskComponent.getElement(), taskFormComponent.getElement());
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
+  taskEditButton.onclick = (onEditClick);
+
+  render(boardTaskListSection, taskComponent.getElement());
 };
 
+// Рендер меню
 const mainContainer = document.querySelector(`.main`);
 const mainControlSection = mainContainer.querySelector(`.main__control`);
 
-render(mainControlSection, createSiteMenuTemplate());
+render(mainControlSection, new MenuComponent().getElement());
 
-// Генерация задач-моков
+// Генерация задач
 const taskList = [];
 
 for (let i = 0; i < TOTAL_TASK_AMOUNT; i++) {
   taskList.push(generateTask());
 }
 
-render(mainContainer, createTaskBoardTemplate());
-
-const boardTaskListSection = mainContainer.querySelector(`.board__tasks`);
-render(boardTaskListSection, createTaskFormTemplate(taskList[0]), `afterbegin`);
-
-// Рендер фильтров
+// Рендер фильтров и контента
 const filters = generateFilters(taskList);
-render(mainControlSection, createFilterTemplate(filters), `afterend`);
+render(mainContainer, new FilterComponent(filters).getElement());
+
+const taskBoardComponent = new TaskBoardComponent();
+render(mainContainer, taskBoardComponent.getElement());
+
+const boardTaskListSection = taskBoardComponent.getElement().querySelector(`.board__tasks`);
 
 // Рендер задач
-for (let i = 1; i < INITIAL_TASK_AMOUNT; i++) {
-  render(boardTaskListSection, createTaskTemplate(taskList[i]));
+for (let i = 0; i < INITIAL_TASK_AMOUNT; i++) {
+  renderTask(taskList[i]);
 }
 
 // Рендер кнопки Load-More и установка клик-события
-render(boardTaskListSection, createLoadMoreButtonTemplate(), `afterend`);
+render(boardTaskListSection.parentNode, new LoadMoreButtonComponent().getElement());
 
 const loadMoreBtn = mainContainer.querySelector(`.load-more`);
 
@@ -52,7 +72,7 @@ loadMoreBtn.onclick = () => {
 
   taskList.slice(taskLoaded, loadMoreAmount)
     .forEach((task) => {
-      render(boardTaskListSection, createTaskTemplate(task));
+      renderTask(task);
       taskLoaded++;
     });
 
