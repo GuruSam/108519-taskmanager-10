@@ -1,26 +1,33 @@
 import {createElement, formatTime, Months} from "../utils";
 
-const renderTags = (tags) => {
-  return tags.map((tag) =>
-    `<span class="card__hashtag-inner">
+export default class Task {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
+
+  renderTags(tags) {
+    return tags.map((tag) =>
+      `<span class="card__hashtag-inner">
         <span class="card__hashtag-name">
           #${tag}
         </span>
       </span>`)
-    .join(`\n`);
-};
+      .join(`\n`);
+  }
 
-const createTaskTemplate = (task) => {
-  const isExpired = task.dueDate instanceof Date && task.dueDate < Date.now();
-  const isDateShowing = !!task.dueDate;
+  getTemplate() {
+    const task = this._task;
+    const isExpired = task.dueDate instanceof Date && task.dueDate < Date.now();
+    const isDateShowing = !!task.dueDate;
 
-  const date = isDateShowing ? `${task.dueDate.getDate()} ${Months[task.dueDate.getMonth()]}` : ``;
-  const time = isDateShowing ? formatTime(task.dueDate) : ``;
+    const date = isDateShowing ? `${task.dueDate.getDate()} ${Months[task.dueDate.getMonth()]}` : ``;
+    const time = isDateShowing ? formatTime(task.dueDate) : ``;
 
-  const repeatClass = Object.values(task.repeatingDays).some(Boolean) ? `card--repeat` : ``;
-  const deadlineClass = isExpired ? `card--deadline` : ``;
+    const repeatClass = Object.values(task.repeatingDays).some(Boolean) ? `card--repeat` : ``;
+    const deadlineClass = isExpired ? `card--deadline` : ``;
 
-  return `<article class="card card--${task.color} ${repeatClass} ${deadlineClass}">
+    return `<article class="card card--${task.color} ${repeatClass} ${deadlineClass}">
     <div class="card__form">
       <div class="card__inner">
         <div class="card__control">
@@ -61,7 +68,7 @@ const createTaskTemplate = (task) => {
 
             <div class="card__hashtag">
               <div class="card__hashtag-list">              
-                ${renderTags(task.tags)}
+                ${this.renderTags(task.tags)}
               </div>
             </div>
           </div>
@@ -69,16 +76,6 @@ const createTaskTemplate = (task) => {
       </div>
     </div>
   </article>`;
-};
-
-export default class Task {
-  constructor(task) {
-    this._task = task;
-    this._element = null;
-  }
-
-  getTemplate() {
-    return createTaskTemplate(this._task);
   }
 
   getElement() {
