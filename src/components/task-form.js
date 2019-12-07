@@ -1,24 +1,31 @@
 import {createElement, formatTime, Months, Days, Colors} from "../utils";
 
-const renderDateStatus = (date, time) =>
-  `<fieldset class="card__date-deadline">
-    <label class="card__input-deadline-wrap">
-      <input
-        class="card__date"
-        type="text"
-        placeholder="23 September"
-        name="date"
-        value="${date} ${time}"
-      />
-    </label>
-  </fieldset>`;
+export default class TaskForm {
+  constructor(task) {
+    this._task = task;
+    this._element = null;
+  }
 
-const renderRepeatingDays = (days, repeatingDays) => {
-  const renderDays = () => {
-    return days.map((day) => {
-      const isChecked = repeatingDays[day];
+  renderDateStatus(date, time) {
+    return `<fieldset class="card__date-deadline">
+      <label class="card__input-deadline-wrap">
+        <input
+          class="card__date"
+          type="text"
+          placeholder="23 September"
+          name="date"
+          value="${date} ${time}"
+        />
+      </label>
+    </fieldset>`;
+  }
 
-      return `<input
+  renderRepeatingDays(days, repeatingDays) {
+    const renderDays = () => {
+      return days.map((day) => {
+        const isChecked = repeatingDays[day];
+
+        return `<input
         class="visually-hidden card__repeat-day-input"
         type="checkbox"
         id="repeat-${day}-1"
@@ -28,20 +35,20 @@ const renderRepeatingDays = (days, repeatingDays) => {
       />
       <label class="card__repeat-day" for="repeat-${day}-1"
         >${day}</label>`;
-    })
-      .join(`\n`);
-  };
+      })
+        .join(`\n`);
+    };
 
-  return `<fieldset class="card__repeat-days">
+    return `<fieldset class="card__repeat-days">
                 <div class="card__repeat-days-inner">
                   ${renderDays()}
                 </div>
               </fieldset>`;
-};
+  }
 
-const renderTags = (tags) => {
-  return tags.map((tag) =>
-    `<span class="card__hashtag-inner">
+  renderTags(tags) {
+    return tags.map((tag) =>
+      `<span class="card__hashtag-inner">
       <input
         type="hidden"
         name="hashtag"
@@ -55,12 +62,12 @@ const renderTags = (tags) => {
         delete
       </button>
     </span>`)
-    .join(`\n`);
-};
+      .join(`\n`);
+  }
 
-const renderColors = (colors, currentColor) => {
-  return colors.map((color) => {
-    return `<input
+  renderColors(colors, currentColor) {
+    return colors.map((color) => {
+      return `<input
               type="radio"
               id="color-${color}-1"
               class="card__color-input card__color-input--${color} visually-hidden"
@@ -73,21 +80,22 @@ const renderColors = (colors, currentColor) => {
               class="card__color card__color--${color}"
               >${color}</label
             >`;
-  }).join(`\n`);
-};
+    }).join(`\n`);
+  }
 
-const createTaskFormTemplate = (task) => {
-  const isExpired = task.dueDate instanceof Date && task.dueDate < Date.now();
-  const isDateShowing = !!task.dueDate;
+  getTemplate() {
+    const task = this._task;
+    const isExpired = task.dueDate instanceof Date && task.dueDate < Date.now();
+    const isDateShowing = !!task.dueDate;
 
-  const date = isDateShowing ? `${task.dueDate.getDate()} ${Months[task.dueDate.getMonth()]}` : ``;
-  const time = isDateShowing ? formatTime(task.dueDate) : ``;
+    const date = isDateShowing ? `${task.dueDate.getDate()} ${Months[task.dueDate.getMonth()]}` : ``;
+    const time = isDateShowing ? formatTime(task.dueDate) : ``;
 
-  const isRepeating = Object.values(task.repeatingDays).some(Boolean);
-  const repeatClass = isRepeating ? `card--repeat` : ``;
-  const deadlineClass = isExpired ? `card--deadline` : ``;
+    const isRepeating = Object.values(task.repeatingDays).some(Boolean);
+    const repeatClass = isRepeating ? `card--repeat` : ``;
+    const deadlineClass = isExpired ? `card--deadline` : ``;
 
-  return `<article class="card card--edit card--${task.color} ${repeatClass} ${deadlineClass}">
+    return `<article class="card card--edit card--${task.color} ${repeatClass} ${deadlineClass}">
     <form class="card__form" method="get">
       <div class="card__inner">
         <div class="card__color-bar">
@@ -113,17 +121,17 @@ const createTaskFormTemplate = (task) => {
                 date: <span class="card__date-status">${isDateShowing ? `yes` : `no`}</span>
               </button>
 
-              ${isDateShowing ? renderDateStatus(date, time) : ``}
+              ${isDateShowing ? this.renderDateStatus(date, time) : ``}
 
               <button class="card__repeat-toggle" type="button">
                 repeat:<span class="card__repeat-status">${isRepeating ? `yes` : `no`}</span>
               </button>
 
-              ${isRepeating ? renderRepeatingDays(Days, task.repeatingDays) : ``}
+              ${isRepeating ? this.renderRepeatingDays(Days, task.repeatingDays) : ``}
             </div>
 
             <div class="card__hashtag">
-              <div class="card__hashtag-list">${renderTags(task.tags)}</div>
+              <div class="card__hashtag-list">${this.renderTags(task.tags)}</div>
 
               <label>
                 <input
@@ -139,7 +147,7 @@ const createTaskFormTemplate = (task) => {
           <div class="card__colors-inner">
             <h3 class="card__colors-title">Color</h3>
             <div class="card__colors-wrap">
-              ${renderColors(Colors, task.color)}
+              ${this.renderColors(Colors, task.color)}
             </div>
           </div>
         </div>
@@ -151,16 +159,6 @@ const createTaskFormTemplate = (task) => {
       </div>
     </form>
   </article>`;
-};
-
-export default class TaskForm {
-  constructor(task) {
-    this._task = task;
-    this._element = null;
-  }
-
-  getTemplate() {
-    return createTaskFormTemplate(this._task);
   }
 
   getElement() {
